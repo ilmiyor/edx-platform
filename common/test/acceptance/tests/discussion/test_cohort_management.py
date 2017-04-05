@@ -847,23 +847,24 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
 
         Given I have a course with a cohort defined,
         And a inline discussion topic with disabled Save button.
-        When I click on cohort_some_inline_topics
+        When I click on always_inline_discussion
         Then I see enabled save button
-        And I see enabled inline discussion topics
+        And I see disabled inline discussion topics
         When I reload the page
         Then I see the option enabled
         """
         self.cohort_discussion_topics_are_visible()
 
         # enable some inline discussion topic radio button.
-        self.cohort_management_page.select_cohort_some_inline_discussion()
+        self.cohort_management_page.select_always_inline_discussion()
         # I see that save button is enabled
         self.assertFalse(self.cohort_management_page.is_save_button_disabled(self.inline_key))
-        # I see that inline discussion topics are enabled
-        self.assertFalse(self.cohort_management_page.inline_discussion_topics_disabled())
+        # I see that inline discussion topics are disabled
+        self.assertTrue(self.cohort_management_page.inline_discussion_topics_disabled())
 
         self.reload_page()
-        self.assertIsNotNone(self.cohort_management_page.cohort_some_inline_discussion_selected())
+        # TODO: this seems wrong
+        self.assertIsNotNone(self.cohort_management_page.always_inline_discussion_selected())
 
     def test_cohort_inline_discussion_topic(self):
         """
