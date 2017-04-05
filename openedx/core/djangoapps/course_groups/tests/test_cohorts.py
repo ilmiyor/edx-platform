@@ -681,7 +681,7 @@ class TestCohorts(ModuleStoreTestCase):
 
         self.assertFalse(course_cohort_settings.is_cohorted)
         self.assertEqual(course_cohort_settings.cohorted_discussions, [])
-        self.assertTrue(course_cohort_settings.always_cohort_inline_discussions)
+        self.assertFalse(course_cohort_settings.always_cohort_inline_discussions)
 
     def test_update_course_cohort_settings(self):
         """

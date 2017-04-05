@@ -1164,9 +1164,9 @@ class CourseDescriptor(CourseFields, SequenceDescriptor, LicenseMixin):
         """
         config = self.cohort_config
         if config is None:
-            return True
+            return False
 
-        return bool(config.get("always_cohort_inline_discussions", True))
+        return bool(config.get("always_cohort_inline_discussions", False))
 
     @property
     def is_newish(self):

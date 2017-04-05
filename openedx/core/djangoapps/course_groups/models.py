@@ -177,7 +177,7 @@ class CourseCohortsSettings(models.Model):
     _cohorted_discussions = models.TextField(db_column='cohorted_discussions', null=True, blank=True)  # JSON list
 
     # pylint: disable=invalid-name
-    always_cohort_inline_discussions = models.BooleanField(default=True)
+    always_cohort_inline_discussions = models.BooleanField(default=False)
 
     @property
     def cohorted_discussions(self):
