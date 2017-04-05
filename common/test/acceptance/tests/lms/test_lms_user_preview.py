@@ -285,6 +285,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
 
         self.alpha_text = "VISIBLE TO ALPHA"
         self.beta_text = "VISIBLE TO BETA"
+        self.audit_text = "VISIBLE TO AUDIT"
         self.everyone_text = "VISIBLE TO EVERYONE"
 
         course_fixture.add_children(
@@ -296,6 +297,9 @@ class CourseWithContentGroupsTest(StaffViewTest):
                         ),
                         XBlockFixtureDesc(
                             'problem', self.beta_text, data=problem_data, metadata={"group_access": {0: [1]}}
+                        ),
+                        XBlockFixtureDesc(
+                            'problem', self.audit_text, data=problem_data, metadata={"group_access": {50: [1]}}
                         ),
                         XBlockFixtureDesc('problem', self.everyone_text, data=problem_data)
                     )
@@ -313,7 +317,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Then I see all the problems, regardless of their group_access property
         """
         course_page = self._goto_staff_page()
-        verify_expected_problem_visibility(self, course_page, [self.alpha_text, self.beta_text, self.everyone_text])
+        verify_expected_problem_visibility(
+            self,
+            course_page,
+            [self.alpha_text, self.beta_text, self.audit_text, self.everyone_text]
+        )
 
     @attr(shard=3)
     def test_student_not_in_content_group(self):
@@ -357,6 +365,20 @@ class CourseWithContentGroupsTest(StaffViewTest):
         course_page.set_staff_view_mode('Student in beta')
         verify_expected_problem_visibility(self, course_page, [self.beta_text, self.everyone_text])
 
+    @attr(shard=3)
+    def test_as_student_in_audit(self):
+        """
+        Scenario: When previewing as a student in the audit enrollment track, only content visible to audit is shown
+        Given I have a course with an enrollment_track user partition
+        And problems that are associated with specific groups in the user partition
+        When I view the courseware in the LMS with staff access
+        And I change to previewing as a Student in group gamma
+        Then I see only problems visible to group gamma
+        """
+        course_page = self._goto_staff_page()
+        course_page.set_staff_view_mode('Student in Audit')
+        verify_expected_problem_visibility(self, course_page, [self.audit_text, self.everyone_text])
+
     def create_cohorts_and_assign_students(self, student_a_username, student_b_username):
         """
         Adds 2 manual cohorts, linked to content groups, to the course.
@@ -386,11 +408,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
         # Masquerade as student in alpha cohort:
         course_page = self._goto_staff_page()
         course_page.set_staff_view_mode_specific_student(student_a_username)
-        verify_expected_problem_visibility(self, course_page, [self.alpha_text, self.everyone_text])
+        verify_expected_problem_visibility(self, course_page, [self.alpha_text, self.audit_text, self.everyone_text])
 
         # Masquerade as student in beta cohort:
         course_page.set_staff_view_mode_specific_student(student_b_username)
-        verify_expected_problem_visibility(self, course_page, [self.beta_text, self.everyone_text])
+        verify_expected_problem_visibility(self, course_page, [self.beta_text, self.audit_text, self.everyone_text])
 
     @attr('a11y')
     def test_course_page(self):
