@@ -824,56 +824,63 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         Scenario: Select the always_cohort_inline_topics radio button
 
         Given I have a course with a cohort defined,
-        And a inline discussion topic with disabled Save button.
+        And an inline discussion topic with disabled Save button.
         When I click on always_cohort_inline_topics
         Then I see enabled save button
         And I see disabled inline discussion topics
-        When I reload the page
-        Then I see the option enabled
+        When I save the change
+        And I reload the page
+        Then I see the always_cohort_inline_topics option enabled
         """
         self.cohort_discussion_topics_are_visible()
 
-        # enable always inline discussion topics.
+        # enable always inline discussion topics and save the change
         self.cohort_management_page.select_always_inline_discussion()
-
+        self.assertFalse(self.cohort_management_page.is_save_button_disabled(self.inline_key))
         self.assertTrue(self.cohort_management_page.inline_discussion_topics_disabled())
+        self.cohort_management_page.save_discussion_topics(key=self.inline_key)
 
         self.reload_page()
-        self.assertIsNotNone(self.cohort_management_page.always_inline_discussion_selected())
+        self.assertTrue(self.cohort_management_page.always_inline_discussion_selected())
 
     def test_cohort_some_inline_topics_enabled(self):
         """
         Scenario: Select the cohort_some_inline_topics radio button
 
-        Given I have a course with a cohort defined,
-        And a inline discussion topic with disabled Save button.
-        When I click on always_inline_discussion
+        Given I have a course with a cohort defined and always_cohort_inline_topics set to True
+        And an inline discussion topic with disabled Save button.
+        When I click on cohort_some_inline_topics
         Then I see enabled save button
-        And I see disabled inline discussion topics
-        When I reload the page
-        Then I see the option enabled
+        And I see enabled inline discussion topics
+        When I save the change
+        And I reload the page
+        Then I see the cohort_some_inline_topics option enabled
         """
         self.cohort_discussion_topics_are_visible()
+        # By default always inline discussion topics is False. Enable it (and reload the page).
+        self.assertFalse(self.cohort_management_page.always_inline_discussion_selected())
+        self.cohort_management_page.select_always_inline_discussion()
+        self.cohort_management_page.save_discussion_topics(key=self.inline_key)
+        self.reload_page()
+        self.assertFalse(self.cohort_management_page.cohort_some_inline_discussion_selected())
 
         # enable some inline discussion topic radio button.
-        self.cohort_management_page.select_always_inline_discussion()
+        self.cohort_management_page.select_cohort_some_inline_discussion()
         # I see that save button is enabled
         self.assertFalse(self.cohort_management_page.is_save_button_disabled(self.inline_key))
-        # I see that inline discussion topics are disabled
-        self.assertTrue(self.cohort_management_page.inline_discussion_topics_disabled())
+        # I see that inline discussion topics are enabled
+        self.assertFalse(self.cohort_management_page.inline_discussion_topics_disabled())
+        self.cohort_management_page.save_discussion_topics(key=self.inline_key)
 
         self.reload_page()
-        # TODO: this seems wrong
-        self.assertIsNotNone(self.cohort_management_page.always_inline_discussion_selected())
+        self.assertTrue(self.cohort_management_page.cohort_some_inline_discussion_selected())
 
     def test_cohort_inline_discussion_topic(self):
         """
         Scenario: cohort inline discussion topic.
 
         Given I have a course with a cohort defined,
-        And a inline discussion topic with disabled Save button.
-        When I click on cohort_some_inline_discussion_topics
-        Then I see enabled saved button
+        And a inline discussion topic with disabled Save button
         And When I click on inline discussion topic
         And I see enabled save button
         And When i click save button
@@ -882,9 +889,6 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         Then I see the discussion topic selected
         """
         self.cohort_discussion_topics_are_visible()
-
-        # select some inline discussion topics radio button.
-        self.cohort_management_page.select_cohort_some_inline_discussion()
 
         cohorted_topics_before = self.cohort_management_page.get_cohorted_topics_count(self.inline_key)
         # check the discussion topic.
@@ -913,9 +917,6 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         """
         self.cohort_discussion_topics_are_visible()
 
-        # enable some inline discussion topics.
-        self.cohort_management_page.select_cohort_some_inline_discussion()
-
         # category should not be selected.
         self.assertFalse(self.cohort_management_page.is_category_selected())
 
@@ -936,9 +937,6 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         Then I see parent category to be deselected.
         """
         self.cohort_discussion_topics_are_visible()
-
-        # enable some inline discussion topics.
-        self.cohort_management_page.select_cohort_some_inline_discussion()
 
         # category should not be selected.
         self.assertFalse(self.cohort_management_page.is_category_selected())
@@ -969,9 +967,6 @@ class CohortDiscussionTopicsTest(UniqueCourseTest, CohortTestMixin):
         same sub-category being selected
         """
         self.cohort_discussion_topics_are_visible()
-
-        # enable some inline discussion topics.
-        self.cohort_management_page.select_cohort_some_inline_discussion()
 
         # category should not be selected.
         self.assertFalse(self.cohort_management_page.is_category_selected())
