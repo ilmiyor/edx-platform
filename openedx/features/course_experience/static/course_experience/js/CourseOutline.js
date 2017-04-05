@@ -1,9 +1,14 @@
-import * as constants from 'edx-ui-toolkit/src/js/utils/constants';
-import log from 'logger';
+/* globals Logger */
 
-export class CourseOutline {
+import constants from 'edx-ui-toolkit/src/js/utils/constants';
+
+export default class CourseOutline {
   constructor(root) {
-    document.querySelector(root).addEventListener('keydown', (event) => {
+    this.root = root;
+  }
+
+  init() {
+    document.querySelector(this.root).addEventListener('keydown', (event) => {
       const focusable = [...document.querySelectorAll('.outline-item.focusable')];
       const currentFocusIndex = focusable.indexOf(event.target);
 
@@ -19,14 +24,16 @@ export class CourseOutline {
       }
     });
 
-    document.querySelectorAll('a:not([href^="#"])').addEventListener('click', (event) => {
-        log(
-            'edx.ui.lms.link_clicked',
-            {
-                current_url: window.location.href,
-                target_url: event.currentTarget.href
-            }
+    document.querySelectorAll('a:not([href^="#"])')
+      .forEach(link => link.addEventListener('click', (event) => {
+        Logger.log(
+          'edx.ui.lms.link_clicked',
+          {
+            current_url: window.location.href,
+            target_url: event.currentTarget.href,
+          },
         );
-    });
+      }),
+    );
   }
 }

@@ -52,5 +52,5 @@ from django.utils.translation import ugettext as _
 </div>
 
 <%static:webpack entry="CourseOutline">
-    new CourseOutline('.block-tree');
+    (new CourseOutline('.block-tree')).init();
 </%static:webpack>

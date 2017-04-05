@@ -17,7 +17,7 @@ const wpconfig = {
     libraryTarget: 'window',
   },
 
-  devtool: isProd ? false : 'cheap-eval-source-map',
+  devtool: isProd ? false : 'source-map',
 
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
@@ -42,8 +42,12 @@ const wpconfig = {
       },
     ],
   },
+
   resolve: {
     extensions: ['.js', '.json'],
+    alias: {
+      logger: path.resolve(__dirname, 'common/static/js/src/logger.js'),
+    }
   }
 };
 
