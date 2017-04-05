@@ -17,7 +17,8 @@ from courseware.masquerade import (
     MasqueradingKeyValueStore,
     handle_ajax,
     setup_masquerade,
-    get_masquerading_group_info
+    get_masquerading_group_info,
+    get_masquerading_user_group
 )
 from courseware.tests.factories import StaffFactory
 from courseware.tests.helpers import LoginEnrollmentTestCase, masquerade_as_group_member
@@ -451,6 +452,23 @@ class TestGetMasqueradingGroupId(StaffMasqueradeTestCase):
         group_id, user_partition_id = get_masquerading_group_info(self.test_user, self.course.id)
         self.assertEqual(group_id, 1)
         self.assertEqual(user_partition_id, 0)
+
+    @patch.dict('django.conf.settings.FEATURES', {'DISABLE_START_DATES': False})
+    def test_get_masquerade_group(self):
+        """
+        Tests that a staff member can masquerade as being in a group in a user partition
+        """
+        # Verify there is no masquerading group initially
+        group = get_masquerading_user_group(self.course.id, self.test_user, self.user_partition)
+        self.assertIsNone(group)
+
+        # Install a masquerading group
+        self.ensure_masquerade_as_group_member(0, 1)
+
+        # Verify that the masquerading group is returned
+        group = get_masquerading_user_group(self.course.id, self.test_user, self.user_partition)
+        self.assertEqual(group.id, 1)
+
 
 
 class ReadOnlyKeyValueStore(DictKeyValueStore):
