@@ -372,8 +372,8 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Given I have a course with an enrollment_track user partition
         And problems that are associated with specific groups in the user partition
         When I view the courseware in the LMS with staff access
-        And I change to previewing as a Student in group gamma
-        Then I see only problems visible to group gamma
+        And I change to previewing as a Student in audit enrollment track
+        Then I see only problems visible to audit enrollment track
         """
         course_page = self._goto_staff_page()
         course_page.set_staff_view_mode('Student in Audit')
