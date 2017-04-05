@@ -76,7 +76,11 @@ def program_details(request, program_uuid):
     }
 
     if waffle.switch_is_active('new_program_progress'):
-        course_progress = meter.progress(programs=[program_data], count_only=False)[0]
+        course_progress = meter.progress(
+            programs=[program_data],
+            count_only=False,
+            show_expired_runs_as_remaining=True
+        )[0]
         program_data.pop('courses')
 
         context.update({
