@@ -13,8 +13,7 @@ from common.test.acceptance.pages.lms.instructor_dashboard import InstructorDash
 from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from bok_choy.promise import EmptyPromise
-from xmodule.partitions.partitions import Group
-from xmodule.partitions.partitions_service import (ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID)
+from xmodule.partitions.partitions import (Group, ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID)
 from textwrap import dedent
 
 
