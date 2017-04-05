@@ -126,6 +126,43 @@ class ProgramProgressMeter(object):
 
         return programs
 
+    @cached_property
+    def failed_course_runs(self):
+        """
+        Determine which course runs have been failed by the user.
+
+        Returns:
+            list of strings, each representing a certificate course run key
+        """
+        course_run_certificates = certificate_api.get_certificates_for_user(self.user.username)
+        return [
+            unicode(certificate['course_key']) for certificate in course_run_certificates
+            if not certificate_api.is_passing_status(certificate['status'])
+        ]
+
+    def does_course_still_qualify_as_in_progress(self, now, enrolled_run_modes, course):
+        # Part 1: Check if any of the seats you are enrolled in qualify this course as in progress
+        enrolled_runs = [run for run in course['course_runs'] if run['is_enrolled']]
+        # Check if you are enrolled in the required mode for the run
+        runs_with_required_mode = [
+            run for run in enrolled_runs
+            if run['type'] in enrolled_run_modes[run['key']]
+        ]
+        if runs_with_required_mode:
+            # Check if the runs you are enrolled in with the right mode are not failed
+            not_failed_runs = [run for run in runs_with_required_mode if run not in self.failed_course_runs]
+            if not_failed_runs:
+                return True
+        # Part 2: Check if any of the seats you are not enrolled in
+        # in the runs you are enrolled in qualify this course as in progress
+        upgrade_deadlines = [
+            seat['upgrade_deadline'] for run in enrolled_runs for seat in run['seats']
+            if seat['type'] == run['type'] and run['type'] not in enrolled_run_modes[run['key']]]
+        course_still_upgradeable = any((x is not None) and (parse(x) > now) for x in upgrade_deadlines)
+        if course_still_upgradeable:
+            return True
+        return False
+
     def progress(self, programs=None, count_only=True):
         """Gauge a user's progress towards program completion.
 
@@ -141,6 +178,11 @@ class ProgramProgressMeter(object):
             list of dict, each containing information about a user's progress
                 towards completing a program.
         """
+        now = datetime.datetime.now(utc)
+        enrolled_run_modes = defaultdict(set)
+        for enrollment in self.enrollments:
+            enrolled_run_modes[str(enrollment.course_id)].add(enrollment.mode)
+
         progress = []
         programs = programs or self.engaged_programs
         for program in programs:
@@ -150,7 +192,12 @@ class ProgramProgressMeter(object):
                 if self._is_course_complete(course):
                     completed.append(course)
                 elif self._is_course_in_progress(course):
-                    in_progress.append(course)
+                    course_in_progress = self.does_course_still_qualify_as_in_progress(now, enrolled_run_modes, course)
+                    if course_in_progress:
+                        in_progress.append(course)
+                    else:
+                        course['expired'] = True
+                        not_started.append(course)
                 else:
                     not_started.append(course)
 
