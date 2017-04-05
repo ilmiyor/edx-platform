@@ -14,6 +14,7 @@ from common.test.acceptance.pages.lms.staff_view import StaffCoursewarePage
 from common.test.acceptance.fixtures.course import CourseFixture, XBlockFixtureDesc
 from bok_choy.promise import EmptyPromise
 from xmodule.partitions.partitions import Group
+from xmodule.partitions.partitions_service import (ENROLLMENT_TRACK_PARTITION_ID, MINIMUM_STATIC_PARTITION_ID)
 from textwrap import dedent
 
 
@@ -256,10 +257,13 @@ class CourseWithContentGroupsTest(StaffViewTest):
             "metadata": {
                 u"user_partitions": [
                     create_user_partition_json(
-                        0,
+                        MINIMUM_STATIC_PARTITION_ID,
                         'Configuration alpha,beta',
                         'Content Group Partition',
-                        [Group("0", 'alpha'), Group("1", 'beta')],
+                        [
+                            Group(MINIMUM_STATIC_PARTITION_ID + 1, 'alpha'),
+                            Group(MINIMUM_STATIC_PARTITION_ID + 2, 'beta')
+                        ],
                         scheme="cohort"
                     )
                 ],
@@ -293,13 +297,22 @@ class CourseWithContentGroupsTest(StaffViewTest):
                 XBlockFixtureDesc('sequential', 'Test Subsection').add_children(
                     XBlockFixtureDesc('vertical', 'Test Unit').add_children(
                         XBlockFixtureDesc(
-                            'problem', self.alpha_text, data=problem_data, metadata={"group_access": {0: [0]}}
+                            'problem',
+                            self.alpha_text,
+                            data=problem_data,
+                            metadata={"group_access": {MINIMUM_STATIC_PARTITION_ID: [MINIMUM_STATIC_PARTITION_ID + 1]}}
                         ),
                         XBlockFixtureDesc(
-                            'problem', self.beta_text, data=problem_data, metadata={"group_access": {0: [1]}}
+                            'problem',
+                            self.beta_text,
+                            data=problem_data,
+                            metadata={"group_access": {MINIMUM_STATIC_PARTITION_ID: [MINIMUM_STATIC_PARTITION_ID + 2]}}
                         ),
                         XBlockFixtureDesc(
-                            'problem', self.audit_text, data=problem_data, metadata={"group_access": {50: [1]}}
+                            'problem',
+                            self.audit_text,
+                            data=problem_data,
+                            metadata={"group_access": {ENROLLMENT_TRACK_PARTITION_ID: [1]}}
                         ),
                         XBlockFixtureDesc('problem', self.everyone_text, data=problem_data)
                     )
