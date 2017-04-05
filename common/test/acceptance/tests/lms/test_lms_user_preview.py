@@ -312,6 +312,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
                             'problem',
                             self.audit_text,
                             data=problem_data,
+                            # Below 1 is the hardcoded group ID for "Audit"
                             metadata={"group_access": {ENROLLMENT_TRACK_PARTITION_ID: [1]}}
                         ),
                         XBlockFixtureDesc(
