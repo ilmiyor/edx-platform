@@ -470,7 +470,6 @@ class TestGetMasqueradingGroupId(StaffMasqueradeTestCase):
         self.assertEqual(group.id, 1)
 
 
-
 class ReadOnlyKeyValueStore(DictKeyValueStore):
     """
     A KeyValueStore that raises an exception on attempts to modify it.
