@@ -34,8 +34,8 @@ show_preview_menu = course and staff_access and supports_preview_menu
                         <label for="action-preview-select" class="action-preview-label">${_("View this course as:")}</label>
                         <select class="action-preview-select" id="action-preview-select" name="select">
                             <option value="staff" ${staff_selected}>${_("Staff")}</option>
-                            <option value="student" ${student_selected}>${_("Student")}</option>
-                            <option value="specific student" ${specific_student_selected}>${_("Specific student")}</option>
+                            <option value="student" ${student_selected}>${_("Learner")}</option>
+                            <option value="specific student" ${specific_student_selected}>${_("Specific learner")}</option>
                             % if course_partitions:
                                 % for course_partition in course_partitions:
                                     % for group in sorted(course_partition.groups, key=lambda group: group.name):

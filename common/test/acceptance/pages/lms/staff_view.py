@@ -51,7 +51,7 @@ class StaffPreviewPage(PageObject):
         """
         Set the current preview mode to "Specific Student" with the given username or email
         """
-        required_mode = "Specific student"
+        required_mode = "Specific learner"
         if self.staff_view_mode != required_mode:
             self.q(css=self.VIEW_MODE_OPTIONS_CSS).filter(lambda el: el.text == required_mode).first.click()
         # Use a script here because .clear() + .send_keys() triggers unwanted behavior if a username is already set

@@ -98,8 +98,8 @@ class StaffViewToggleTest(CourseWithoutContentGroupsTest):
 
         course_page = self._goto_staff_page()
         self.assertTrue(course_page.has_tab('Instructor'))
-        course_page.set_staff_view_mode('Student')
-        self.assertEqual(course_page.staff_view_mode, 'Student')
+        course_page.set_staff_view_mode('Learner')
+        self.assertEqual(course_page.staff_view_mode, 'Learner')
         self.assertFalse(course_page.has_tab('Instructor'))
 
 
@@ -351,7 +351,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Then I see only problems visible to all users
         """
         course_page = self._goto_staff_page()
-        course_page.set_staff_view_mode('Student')
+        course_page.set_staff_view_mode('Learner')
         verify_expected_problem_visibility(self, course_page, [self.everyone_text])
 
     @attr(shard=3)
@@ -365,7 +365,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Then I see only problems visible to group alpha
         """
         course_page = self._goto_staff_page()
-        course_page.set_staff_view_mode('Student in alpha')
+        course_page.set_staff_view_mode('Learner in alpha')
         verify_expected_problem_visibility(self, course_page, [self.alpha_text, self.everyone_text])
 
     @attr(shard=3)
@@ -379,7 +379,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Then I see only problems visible to group beta
         """
         course_page = self._goto_staff_page()
-        course_page.set_staff_view_mode('Student in beta')
+        course_page.set_staff_view_mode('Learner in beta')
         verify_expected_problem_visibility(self, course_page, [self.beta_text, self.everyone_text])
 
     @attr(shard=3)
@@ -393,7 +393,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
         Then I see only problems visible to audit enrollment track
         """
         course_page = self._goto_staff_page()
-        course_page.set_staff_view_mode('Student in Audit')
+        course_page.set_staff_view_mode('Learner in Audit')
         verify_expected_problem_visibility(self, course_page, [self.audit_text, self.everyone_text])
 
     def create_cohorts_and_assign_students(self, student_a_username, student_b_username):
