@@ -314,7 +314,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
                             data=problem_data,
                             metadata={"group_access": {ENROLLMENT_TRACK_PARTITION_ID: [1]}}
                         ),
-                        XBlockFixtureDesc('problem', self.everyone_text, data=problem_data)
+                        XBlockFixtureDesc(
+                            'problem',
+                            self.everyone_text,
+                            data=problem_data
+                        )
                     )
                 )
             )
