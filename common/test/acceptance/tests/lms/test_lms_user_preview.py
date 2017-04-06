@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Tests the "preview" selector in the LMS that allows changing between Staff, Student, and Content Groups.
+Tests the "preview" selector in the LMS that allows changing between Staff, Learner, and Content Groups.
 """
 
 
@@ -343,11 +343,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
     @attr(shard=3)
     def test_student_not_in_content_group(self):
         """
-        Scenario: When previewing as a student, only content visible to all is shown
+        Scenario: When previewing as a learner, only content visible to all is shown
         Given I have a course with a cohort user partition
         And problems that are associated with specific groups in the user partition
         When I view the courseware in the LMS with staff access
-        And I change to previewing as a Student
+        And I change to previewing as a Learner
         Then I see only problems visible to all users
         """
         course_page = self._goto_staff_page()
@@ -357,11 +357,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
     @attr(shard=3)
     def test_as_student_in_alpha(self):
         """
-        Scenario: When previewing as a student in group alpha, only content visible to alpha is shown
+        Scenario: When previewing as a learner in group alpha, only content visible to alpha is shown
         Given I have a course with a cohort user partition
         And problems that are associated with specific groups in the user partition
         When I view the courseware in the LMS with staff access
-        And I change to previewing as a Student in group alpha
+        And I change to previewing as a Learner in group alpha
         Then I see only problems visible to group alpha
         """
         course_page = self._goto_staff_page()
@@ -371,11 +371,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
     @attr(shard=3)
     def test_as_student_in_beta(self):
         """
-        Scenario: When previewing as a student in group beta, only content visible to beta is shown
+        Scenario: When previewing as a learner in group beta, only content visible to beta is shown
         Given I have a course with a cohort user partition
         And problems that are associated with specific groups in the user partition
         When I view the courseware in the LMS with staff access
-        And I change to previewing as a Student in group beta
+        And I change to previewing as a Learner in group beta
         Then I see only problems visible to group beta
         """
         course_page = self._goto_staff_page()
@@ -385,11 +385,11 @@ class CourseWithContentGroupsTest(StaffViewTest):
     @attr(shard=3)
     def test_as_student_in_audit(self):
         """
-        Scenario: When previewing as a student in the audit enrollment track, only content visible to audit is shown
+        Scenario: When previewing as a learner in the audit enrollment track, only content visible to audit is shown
         Given I have a course with an enrollment_track user partition
         And problems that are associated with specific groups in the user partition
         When I view the courseware in the LMS with staff access
-        And I change to previewing as a Student in audit enrollment track
+        And I change to previewing as a Learner in audit enrollment track
         Then I see only problems visible to audit enrollment track
         """
         course_page = self._goto_staff_page()
@@ -399,7 +399,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
     def create_cohorts_and_assign_students(self, student_a_username, student_b_username):
         """
         Adds 2 manual cohorts, linked to content groups, to the course.
-        Each cohort is assigned one student.
+        Each cohort is assigned one learner.
         """
         instructor_dashboard_page = InstructorDashboardPage(self.browser, self.course_id)
         instructor_dashboard_page.visit()
@@ -407,7 +407,7 @@ class CourseWithContentGroupsTest(StaffViewTest):
         cohort_management_page.is_cohorted = True
 
         def add_cohort_with_student(cohort_name, content_group, student):
-            """ Create cohort and assign student to it. """
+            """ Create cohort and assign learner to it. """
             cohort_management_page.add_cohort(cohort_name, content_group=content_group)
             cohort_management_page.add_students_to_selected_cohort([student])
         add_cohort_with_student("Cohort Alpha", "alpha", student_a_username)
@@ -422,12 +422,12 @@ class CourseWithContentGroupsTest(StaffViewTest):
         AutoAuthPage(self.browser, username=student_b_username, course_id=self.course_id, no_login=True).visit()
         self.create_cohorts_and_assign_students(student_a_username, student_b_username)
 
-        # Masquerade as student in alpha cohort:
+        # Masquerade as learner in alpha cohort:
         course_page = self._goto_staff_page()
         course_page.set_staff_view_mode_specific_student(student_a_username)
         verify_expected_problem_visibility(self, course_page, [self.alpha_text, self.audit_text, self.everyone_text])
 
-        # Masquerade as student in beta cohort:
+        # Masquerade as learner in beta cohort:
         course_page.set_staff_view_mode_specific_student(student_b_username)
         verify_expected_problem_visibility(self, course_page, [self.beta_text, self.audit_text, self.everyone_text])
 
